@@ -16,5 +16,4 @@ public class Station {
     private String name;
 
     private String town;
-
 }
