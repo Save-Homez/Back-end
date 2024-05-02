@@ -74,10 +74,10 @@ public class JwtTokenUtils {
         String username = UUID.randomUUID().toString();
         Claims claims = Jwts.claims().setSubject(username);
         Date accessTokenExpiresIn = dateTimeProvider.getDateAfterDays(ACCESS_TOKEN_DURATION);
-        LocalDate date = dateTimeProvider.nowDate();
+        Date date = dateTimeProvider.nowDate();
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(Date.from(Instant.from(date)))
+                .setIssuedAt(date)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
