@@ -23,7 +23,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers("/api/address");
+                .requestMatchers("/api/address", "/api/ai/on-board");
     }
 
     @Bean
