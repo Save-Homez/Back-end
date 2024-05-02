@@ -1,6 +1,6 @@
 package homez.homes.controller;
 
-import homez.homes.controller.dto.AddressInfo;
+import homez.homes.dto.AddressInfo;
 import homez.homes.response.Response;
 import homez.homes.service.AddressService;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/address")
 @RequiredArgsConstructor
 public class AddressController {
-
     private final AddressService addressService;
 
     @GetMapping
     public Response<AddressInfo> getAddress(@RequestParam String x, @RequestParam String y) {
         return Response.success(addressService.findStation(x, y));
     }
-
-
 
 }

@@ -1,4 +1,4 @@
-package homez.homes.controller.dto;
+package homez.homes.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

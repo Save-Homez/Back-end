@@ -1,6 +1,6 @@
 package homez.homes.config.feign;
 
-import homez.homes.controller.dto.KakaoSubwayResponse;
+import homez.homes.dto.KakaoSubwayResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

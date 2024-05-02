@@ -3,17 +3,17 @@ package homez.homes.service;
 import static homez.homes.response.ErrorCode.NO_NEARBY_SUBWAY_FOUND;
 
 import homez.homes.config.feign.KakaoClient;
-import homez.homes.controller.dto.AddressInfo;
-import homez.homes.controller.dto.KakaoSubwayResponse;
-import homez.homes.controller.dto.KakaoSubwayResponse.Document;
+import homez.homes.dto.AddressInfo;
+import homez.homes.dto.KakaoSubwayResponse;
+import homez.homes.dto.KakaoSubwayResponse.Document;
 import homez.homes.response.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AddressService {
     static private final int RADIUS = 1000;
     private final KakaoClient kakaoClient;
