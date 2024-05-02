@@ -1,5 +1,7 @@
 package homez.homes.response;
 
+import static org.springframework.http.HttpStatus.*;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +28,7 @@ public class GlobalExceptionHandler {
                             (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
                 });
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(BAD_REQUEST)
                 .body(Response.error("Request is incomplete.", errors));
     }
 
@@ -48,5 +50,12 @@ public class GlobalExceptionHandler {
         log.error("Feign Error occur. {}", message);
         return ResponseEntity.status(status)
                 .body(Response.error(message));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleException(Exception e) {
+        log.error("어플리케이션 실행 중 에러 발생 {}", e.getMessage());
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                .body(Response.error(INTERNAL_SERVER_ERROR.getReasonPhrase()));
     }
 }
