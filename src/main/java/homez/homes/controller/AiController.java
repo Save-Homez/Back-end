@@ -16,14 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/ai")
 @RequiredArgsConstructor
 public class AiController {
-
     private final JwtTokenUtils jwtTokenUtils;
     private final AiService aiService;
 
     @PostMapping("/on-board")
     public Response<TokenInfo> progressOnboard(@RequestBody @Valid UserInfo userInfo) {
         TokenInfo token = jwtTokenUtils.generateToken();
+
         String username = jwtTokenUtils.getUsernameFromToken(token.getAccessToken());
+        aiService.aiAnalyze(username, userInfo);
 
         return Response.success(token);
     }

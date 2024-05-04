@@ -1,13 +1,39 @@
 package homez.homes.service;
 
+import static homez.homes.response.ErrorCode.CACHE_NOT_FOUND;
+
+import homez.homes.config.feign.AiClient;
+import homez.homes.converter.AiConverter;
+import homez.homes.dto.AiRequest;
+import homez.homes.dto.AiResponse;
+import homez.homes.dto.UserInfo;
+import homez.homes.repository.StationRepository;
+import homez.homes.repository.StationTownOnly;
+import homez.homes.response.CustomException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class AiService {
-    public void aiAnalyze(String username) {
-        // AI 서버에서 결과 가져오기
+    private final AiClient aiClient;
+    private final StationRepository stationRepository;
 
+    @CachePut(value = "aiResponses", key = "#username")
+    public AiResponse aiAnalyze(String username, UserInfo userInfo) {
+        StationTownOnly station = stationRepository.findByName(userInfo.getStation());
+        AiRequest request = AiConverter.toAiRequest(userInfo, station.getTown());
+
+        // AI 서버에서 결과 가져오기
+        return aiClient.getAiResult(request);
+    }
+
+    @Cacheable(value = "aiResponses", key = "#username")
+    public AiResponse getCachedAiResponse(String username) {
+        throw new CustomException(CACHE_NOT_FOUND);
     }
 }

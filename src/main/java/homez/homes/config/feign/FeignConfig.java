@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableFeignClients(basePackages = "homez.homes.config.feign")
-public class FeignClientConfig {
+public class FeignConfig {
     @Bean
     public FeignErrorDecoder feignErrorDecoder() {
         return new FeignErrorDecoder();
