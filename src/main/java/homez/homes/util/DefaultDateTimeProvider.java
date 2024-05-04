@@ -13,13 +13,10 @@ public class DefaultDateTimeProvider implements DateTimeProvider {
         return Date.from(ZonedDateTime.now(ZoneId.of(ZONE_ID)).toInstant());
     }
 
-    /**
-     * @return (서울 시간대의 현재 시각 + duration 일) 후의 {@code Date} 반환
-     */
     @Override
-    public Date getDateAfterDays(int duration) {
+    public Date getDateAfterMinutes(int minutes) {
         return Date.from(
                 ZonedDateTime.now(ZoneId.of(ZONE_ID))
-                        .plus(duration, ChronoUnit.DAYS).toInstant());
+                        .plus(minutes, ChronoUnit.MINUTES).toInstant());
     }
 }

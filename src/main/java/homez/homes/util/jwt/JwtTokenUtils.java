@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class JwtTokenUtils {
-    private final int ACCESS_TOKEN_DURATION = 1;
+    private final int ACCESS_TOKEN_DURATION = 60; // 60분
 
     private final DateTimeProvider dateTimeProvider;
     private final Key key;
@@ -71,7 +71,7 @@ public class JwtTokenUtils {
     private String generateAccessToken() {
         String username = UUID.randomUUID().toString();
         Claims claims = Jwts.claims().setSubject(username);
-        Date accessTokenExpiresIn = dateTimeProvider.getDateAfterDays(ACCESS_TOKEN_DURATION);
+        Date accessTokenExpiresIn = dateTimeProvider.getDateAfterMinutes(ACCESS_TOKEN_DURATION);
         Date date = dateTimeProvider.nowDate();
         return Jwts.builder()
                 .setClaims(claims)
