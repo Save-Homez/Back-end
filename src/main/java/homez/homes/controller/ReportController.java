@@ -1,5 +1,6 @@
 package homez.homes.controller;
 
+import homez.homes.dto.AgencyResponse;
 import homez.homes.dto.PropertyResponse;
 import homez.homes.response.Response;
 import homez.homes.service.ReportService;
@@ -21,8 +22,13 @@ public class ReportController {
         return Response.success();
     }
 
-    @GetMapping("/properties")
+    @GetMapping("/property")
     public Response<PropertyResponse> getProperties(@RequestParam String town) {
         return Response.success(reportService.getProperties(town));
+    }
+
+    @GetMapping("/agency")
+    public Response<AgencyResponse> getAgencies(@RequestParam String town) {
+        return Response.success(reportService.getAgencies(town));
     }
 }

@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PropertyRepository extends JpaRepository<Property, Long> {
     @Query(value = "SELECT * FROM property WHERE town = :town ORDER BY rand()", nativeQuery = true)
-    List<Property> findByTownOrderByRandom(String town, Pageable pageable);
+    List<Property> findPropertiesByTownOrderByRandom(String town, Pageable pageable);
 }
