@@ -1,0 +1,24 @@
+version: "3"
+services:
+  homes:
+    container_name: homes
+    image: "${DOCKER_REPO_HOMES}"
+    ports:
+      - "8080:8080"
+
+  nginx:
+    image: "nginx:1.15-alpine"
+    restart: unless-stopped
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - homes
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
