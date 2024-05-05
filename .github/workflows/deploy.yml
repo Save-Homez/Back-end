@@ -63,7 +63,15 @@ jobs:
         envs: GITHUB_SHA
         script: |
           cd /home/ubuntu/docker/
-          sudo docker rm -f $(docker ps -qa)
-          sudo docker rmi -f $(docker images -q)
+          if [ "${docker ps -aq)" ]; then
+            sudo docker rm -f $(docker ps -qa)
+          else
+            echo "No containers to remove."
+          fi
+          if [ "$(docker images -q)" ]; then
+            sudo docker rmi -f $(docker images -q)
+          else
+            echo "No images to remove."
+          fi
           docker-compose up -d
           docker image prune -f
