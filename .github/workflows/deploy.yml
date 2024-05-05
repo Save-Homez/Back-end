@@ -63,7 +63,7 @@ jobs:
         envs: GITHUB_SHA
         script: |
           cd /home/ubuntu/docker/
-          if [ "${docker ps -aq)" ]; then
+          if [ "$(docker ps -aq)" ]; then
             sudo docker rm -f $(docker ps -qa)
           else
             echo "No containers to remove."
