@@ -35,9 +35,9 @@ jobs:
         java-version: '17'
         distribution: "adopt"
 
-    - name: Make application.properties for ardoodleking-api
+    - name: Make application.properties for homes
       run: |
-          cd ./homes/src/main/resources
+          cd ./src/main/resources
           touch ./application.properties
           echo "${{ secrets.PROPERTIES }}" > application.properties
       shell: bash
@@ -45,12 +45,12 @@ jobs:
     - name: Build homes module
       run: |
           chmod +x ./gradlew
-          ./gradlew :homes:clean :homes:build -x test
+          ./gradlew clean build -x test
 
     - name: Build and Push Docker Image for homes
       run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -f ./homes/Dockerfile -t ${{ secrets.DOCKER_REPO_HOMES }} ./homes
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_REPO_HOMES }} .
           docker push ${{ secrets.DOCKER_REPO_HOMES }}
   
     - name: Deploy to server
