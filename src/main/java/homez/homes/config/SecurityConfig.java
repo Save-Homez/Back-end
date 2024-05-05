@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenUtils jwtTokenUtils;
-    private final CorsConfig corsConfig;
+//    private final CorsConfig corsConfig;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -30,7 +30,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfig))
+//                .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfig))
+                .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement((sm) -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/address").permitAll()
