@@ -29,7 +29,8 @@ public class AiService {
         AiRequest request = AiConverter.toAiRequest(userInfo, station.getTown());
 
         // AI 서버에서 결과 가져오기
-        return aiClient.getAiResult(request);
+//        return aiClient.getAiResult(request);
+        return null;
     }
 
     @Cacheable(value = "aiResponses", key = "#username")
