@@ -25,3 +25,9 @@ feign.ai-client.url: ${AI_URL}
 logging.level:
   org.hibernate.SQL: debug
 #  org.hibernate.type: trace  # 파라미터 로그용
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
+        security: DEBUG
