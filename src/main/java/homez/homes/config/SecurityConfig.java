@@ -42,7 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/address").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기
-                        .anyRequest().denyAll())
+                        .anyRequest().permitAll())
                 .addFilterBefore(new JwtTokenFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
