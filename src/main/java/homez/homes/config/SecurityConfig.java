@@ -58,7 +58,7 @@ public class SecurityConfig {
 //        config.setExposedHeaders(Arrays.asList("Authorization", "Authorization-refresh"));
         config.setMaxAge(Duration.ofSeconds(3600));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
