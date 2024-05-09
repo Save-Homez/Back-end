@@ -1,6 +1,7 @@
 package homez.homes.service;
 
 import static homez.homes.response.ErrorCode.CACHE_NOT_FOUND;
+import static homez.homes.response.ErrorCode.STATION_NOT_FOUND;
 
 import homez.homes.config.feign.AiClient;
 import homez.homes.converter.AiConverter;
@@ -25,7 +26,8 @@ public class AiService {
 
     @CachePut(value = "aiResponses", key = "#username")
     public AiResponse aiAnalyze(String username, UserInfo userInfo) {
-        StationTownOnly station = stationRepository.findByName(userInfo.getStation());
+        StationTownOnly station = stationRepository.findByName(userInfo.getStation())
+                .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
         AiRequest request = AiConverter.toAiRequest(userInfo, station.getTown());
 
         // AI 서버에서 결과 가져오기
