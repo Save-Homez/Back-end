@@ -3,10 +3,10 @@ package homez.homes.config;
 import homez.homes.util.jwt.JwtTokenFilter;
 import homez.homes.util.jwt.JwtTokenUtils;
 import java.time.Duration;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/address").permitAll()
                         .requestMatchers("/api/**").authenticated()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기
                         .anyRequest().denyAll())
                 .addFilterBefore(new JwtTokenFilter(jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -54,7 +55,7 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
-        config.setExposedHeaders(Arrays.asList("Authorization", "Authorization-refresh"));
+//        config.setExposedHeaders(Arrays.asList("Authorization", "Authorization-refresh"));
         config.setMaxAge(Duration.ofSeconds(3600));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);
