@@ -3,6 +3,7 @@ package homez.homes.config;
 import homez.homes.util.jwt.JwtTokenFilter;
 import homez.homes.util.jwt.JwtTokenUtils;
 import java.time.Duration;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,15 +48,16 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("https://save-homez.vercel.app");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(Duration.ofSeconds(3600));
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://save-homez.vercel.app");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+        config.setExposedHeaders(Arrays.asList("Authorization", "Authorization-refresh"));
+        config.setMaxAge(Duration.ofSeconds(3600));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/api/**", config);
         return source;
     }
 }
