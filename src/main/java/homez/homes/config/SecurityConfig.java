@@ -43,7 +43,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -86,19 +85,5 @@ public class SecurityConfig {
             }
         }
     }
-
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowedOrigins(Arrays.asList("https://save-homez.vercel.app"));
-////        config.addAllowedOrigin("http://localhost:3000");
-//        config.setAllowedMethods(Arrays.asList("GET", "POST"));
-//        config.addAllowedHeader("*");
-//        config.setAllowCredentials(true);
-//        config.setMaxAge(Duration.ofSeconds(3600));
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", config);
-//        log.info("CORS Configuration Applied: {}", config.toString());
-//        return source;
-//    }
+    
 }
