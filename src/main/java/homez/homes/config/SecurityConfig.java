@@ -49,7 +49,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList("https://save-homez.vercel.app"));
 //        config.addAllowedOrigin("http://localhost:3000");
