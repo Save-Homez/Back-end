@@ -50,6 +50,9 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+	implementation 'org.hibernate:hibernate-core:6.2.24.Final'
+	implementation 'org.hibernate:hibernate-spatial:6.2.24.Final'
 }
 
 tasks.named('bootBuildImage') {
