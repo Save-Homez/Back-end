@@ -48,6 +48,7 @@ public class GlobalExceptionHandler {
         String errorResult = e.getErrorResult();
         String message = String.format("status: %s, url: %s", status.toString(), url);
         log.error("Feign Error occur. {}", message);
+        log.error("Error Result: {}", errorResult);
         return ResponseEntity.status(status)
                 .body(Response.error(message));
     }
