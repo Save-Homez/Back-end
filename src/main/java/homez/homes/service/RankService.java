@@ -54,7 +54,8 @@ public class RankService {
             String town = towns.get(i).getName();
             Station station = stationRepository.findByTown(town)
                     .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
-            result.add(new TownCard(town, travelTimeMap.get(station.getName()), station.getAvgDeposit(), station.getAvgRental(),
+            result.add(new TownCard(town, travelTimeMap.get(
+                    station.getName()), station.getAvgDeposit(), station.getAvgRental(), station.getAvgLump(),
                     station.getCoordinate().getX(), station.getCoordinate().getY()));
         }
         return result;

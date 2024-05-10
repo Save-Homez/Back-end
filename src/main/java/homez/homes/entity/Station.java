@@ -29,4 +29,6 @@ public class Station {
     private int avgDeposit;
 
     private int avgRental;
+
+    private int avgLump;
 }

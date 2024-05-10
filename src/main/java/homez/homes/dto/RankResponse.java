@@ -27,6 +27,7 @@ public class RankResponse {
         private int travelTime;
         private int avgDeposit;
         private int avgRental;
+        private int avgLump;
 
         private double x;
         private double y;
