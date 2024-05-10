@@ -19,6 +19,7 @@ public class AiResponse {
     public static class AiResult {
         @JsonProperty("pointInfo")
         private List<TownResult> townResults;
+        private String timeRange;
     }
 
     @Getter

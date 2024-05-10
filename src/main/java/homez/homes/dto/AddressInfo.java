@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class AddressInfo {
-    private String station;
+    private String destination;
 }

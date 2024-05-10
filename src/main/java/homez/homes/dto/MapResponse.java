@@ -20,7 +20,7 @@ public class MapResponse {
         private double latitude;
 
         private Mark mark;
-        private String avgDeposit;
-        private String avgRental;
+        private int avgDeposit;
+        private int avgRental;
     }
 }

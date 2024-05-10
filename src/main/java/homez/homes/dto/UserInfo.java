@@ -32,7 +32,7 @@ public class UserInfo {
     private List<String> factors;
 
     @NotNull
-    private String station;
+    private String destination;
 
     @NotNull
     @ValidEnum(enumClass = TimeRange.class)

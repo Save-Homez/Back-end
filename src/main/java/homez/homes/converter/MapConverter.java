@@ -18,7 +18,7 @@ public class MapConverter {
 
     public static Map<String, Integer> toTravelTimeMap(List<TravelTime> travelTimes) {
         return travelTimes.stream()
-                .collect(Collectors.toMap(TravelTime::getDestination, TravelTime::getTime));
+                .collect(Collectors.toMap(TravelTime::getOrigin, TravelTime::getTime));
     }
 
     public static MapResponse toMapResponse(List<Station> stations, Map<String, Integer> travelTimeMap) {

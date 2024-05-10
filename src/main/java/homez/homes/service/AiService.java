@@ -26,7 +26,7 @@ public class AiService {
 
     @CachePut(value = "aiResponses", key = "#username")
     public AiResponse aiAnalyze(String username, UserInfo userInfo) {
-        StationTownOnly station = stationRepository.findByName(userInfo.getStation())
+        StationTownOnly station = stationRepository.findByName(userInfo.getDestination())
                 .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
         AiRequest request = AiConverter.toAiRequest(userInfo, station.getTown());
 

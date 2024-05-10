@@ -26,7 +26,7 @@ public class Station {
 
     private Point coordinate;
 
-    private String avgDeposit;
+    private int avgDeposit;
 
-    private String avgRental;
+    private int avgRental;
 }

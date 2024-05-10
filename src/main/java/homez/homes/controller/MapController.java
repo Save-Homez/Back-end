@@ -17,10 +17,10 @@ public class MapController {
 
     private final MapService mapService;
 
-    @GetMapping("/{origin}")
-    public Response<MapResponse> getLabels(@PathVariable String origin, @RequestParam(value = "x") double longitude,
+    @GetMapping("/{destination}")
+    public Response<MapResponse> getLabels(@PathVariable String destination, @RequestParam(value = "x") double longitude,
                                            @RequestParam(value = "y") double latitude, @RequestParam int radius) {
-        MapResponse response = mapService.getLabels(origin, longitude, latitude, radius);
+        MapResponse response = mapService.getLabels(destination, longitude, latitude, radius);
         return Response.success(response);
     }
 }

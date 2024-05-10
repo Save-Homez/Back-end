@@ -19,13 +19,13 @@ public class MapService {
     private final StationRepository stationRepository;
     private final TravelTimeRepository travelTimeRepository;
 
-    public MapResponse getLabels(String origin, double longitude, double latitude, int radius) {
+    public MapResponse getLabels(String destination, double longitude, double latitude, int radius) {
         List<Station> stations = stationRepository.findWithinRadius(longitude, latitude, radius)
                 .stream()
-                .filter(s -> !s.getName().equals(origin))
+                .filter(s -> !s.getName().equals(destination))
                 .collect(Collectors.toList());
         List<TravelTime> travelTimes = travelTimeRepository
-                .findByOriginAndDestinations(origin, MapConverter.toStationNames(stations));
+                .findByOriginAndDestinations(destination, MapConverter.toStationNames(stations));
         return MapConverter.toMapResponse(stations, MapConverter.toTravelTimeMap(travelTimes));
     }
 
