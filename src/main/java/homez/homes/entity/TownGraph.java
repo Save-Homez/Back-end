@@ -19,7 +19,7 @@ public class TownGraph {
     private String womenWelfare;
     private String education;
     private String culture;
-    private String cinema;
+    private String movie;
     private String art;
     private String concert;
     private String park;
@@ -27,6 +27,7 @@ public class TownGraph {
     private String green;
     private String noise;
     private String air;
+    private String rest;
     private String water;
     private String safety;
     private String clean;

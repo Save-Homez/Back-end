@@ -65,12 +65,12 @@ public class ReportService {
 //        TownGraph townGraph = townGraphRepository.findByTown(town)
 //                .orElseThrow(() -> new CustomException(TOWN_NOT_FOUND));
 
-        Factor f1 = new Factor("MOVIE", "33");
-        Factor f2 = new Factor("ART", "89");
-        Factor f3 = new Factor("CULTURE", "138");
-        Factor f4 = new Factor("WOMEN_WELFARE", "10");
-        Factor f5 = new Factor("PHARMACY", "52");
-        Factor f6 = new Factor("GREEN", "14");
+        Factor f1 = new Factor("영화관", "33");
+        Factor f2 = new Factor("미술관", "89");
+        Factor f3 = new Factor("문화 복지 시설", "138");
+        Factor f4 = new Factor("여성 복지 시설", "10");
+        Factor f5 = new Factor("약국", "52");
+        Factor f6 = new Factor("녹지 분포", "14");
 
         return List.of(f1, f2, f3, f4, f5, f6);
     }
