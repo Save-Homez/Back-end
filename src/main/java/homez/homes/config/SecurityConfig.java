@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -27,7 +26,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -65,7 +63,6 @@ public class SecurityConfig {
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                         FilterChain filterChain) throws ServletException, IOException {
-            log.info("CORS CALLED");
             String origin = request.getHeader("Origin");
             if (allowedOrigins.contains(origin)) {
                 response.setHeader("Access-Control-Allow-Origin", origin);
@@ -77,7 +74,7 @@ public class SecurityConfig {
                     "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-xsrf-token");
             response.setHeader("Access-Control-Expose-Headers", "Accesstoken");
 
-            // allow cros preflight
+            // allow cors preflight
             if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
                 response.setStatus(HttpServletResponse.SC_OK);
             } else {
