@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,7 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @GetMapping("/ai")
+    @PostMapping("/ai")
     public Response<AiReportResponse> getAiReport(@RequestBody @Valid AiReportRequest request, Authentication authentication) {
         AiReportResponse response = reportService.getAiReport(request, authentication.getName());
         return Response.success(response);
