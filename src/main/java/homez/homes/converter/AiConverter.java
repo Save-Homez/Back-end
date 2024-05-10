@@ -15,7 +15,12 @@ public class AiConverter {
                 .age(userInfo.getAge())
                 .workDay(WorkDay.toCode(userInfo.getWorkDay()))
                 .arrivalTime(userInfo.getArrivalTime())
-                .station(userInfo.getDestination())
+                .station(processStation(userInfo.getDestination()))
                 .build();
+    }
+
+    private static String processStation(String station) {
+        String substring = station.substring(0, station.length() - 1);
+        return substring;
     }
 }
