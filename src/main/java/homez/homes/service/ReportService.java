@@ -1,6 +1,5 @@
 package homez.homes.service;
 
-import static homez.homes.response.ErrorCode.CACHE_NOT_FOUND;
 import static homez.homes.response.ErrorCode._NOT_FOUND;
 
 import homez.homes.converter.ReportConverter;
@@ -8,13 +7,11 @@ import homez.homes.dto.AgencyResponse;
 import homez.homes.dto.AiReportRequest;
 import homez.homes.dto.AiReportResponse;
 import homez.homes.dto.AiReportResponse.Factor;
-import homez.homes.dto.AiResponse.TownResult;
 import homez.homes.dto.PropertyResponse;
 import homez.homes.entity.Agency;
 import homez.homes.entity.Property;
 import homez.homes.entity.Station;
 import homez.homes.entity.TravelTime;
-import homez.homes.entity.constant.TimeRange;
 import homez.homes.repository.AgencyRepository;
 import homez.homes.repository.PropertyRepository;
 import homez.homes.repository.StationRepository;
@@ -78,15 +75,15 @@ public class ReportService {
     private String generateTotalStatement() {
         return "종합 분석 결과 어쩌고 저쩌고 블라블라";
     }
-
-    private TownResult getTownResult(String timeRange, String town, String username) {
-        List<TownResult> results = aiService.getCachedAiResponse(username).getAiResult()
-                .get(TimeRange.valueOf(timeRange).getCode()).getTownResults();
-        return results.stream()
-                .filter(r -> r.getName().equals(town))
-                .findFirst()
-                .orElseThrow(() -> new CustomException(CACHE_NOT_FOUND, "캐시 값에 해당 동네가 존재하지 않습니다."));
-    }
+//
+//    private TownResult getTownResult(String timeRange, String town, String username) {
+//        List<TownResult> results = aiService.getCachedAiResponse(username).getAiResult()
+//                .get(TimeRange.valueOf(timeRange).getCode()).getTownResults();
+//        return results.stream()
+//                .filter(r -> r.getName().equals(town))
+//                .findFirst()
+//                .orElseThrow(() -> new CustomException(CACHE_NOT_FOUND, "캐시 값에 해당 동네가 존재하지 않습니다."));
+//    }
 
     public PropertyResponse getProperties(String town) {
         Pageable firstTen = PageRequest.of(0, PAGE_SIZE);
