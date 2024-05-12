@@ -35,5 +35,6 @@ public class RankResponse {
 
         private double x;
         private double y;
+        private String station;
     }
 }

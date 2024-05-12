@@ -15,7 +15,6 @@ public class AiConverter {
                 .age(userInfo.getAge())
                 .workDay(WorkDay.toCode(userInfo.getWorkDay()))
                 .arrivalTime(userInfo.getArrivalTime())
-                .station(processStation(userInfo.getDestination()))
                 .build();
     }
 

@@ -21,4 +21,17 @@ public enum TimeRange {
         }
         return null;
     }
+
+    public static TimeRange fromTime(int time) {
+        if (time <= 30) {
+            return WITHIN_30_MINUTES;
+        }
+        if (time <= 60) {
+            return WITHIN_60_MINUTES;
+        }
+        if (time <= 90) {
+            return WITHIN_90_MINUTES;
+        }
+        return OVER_90_MINUTES;
+    }
 }

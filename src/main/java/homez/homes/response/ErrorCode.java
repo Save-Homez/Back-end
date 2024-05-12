@@ -1,5 +1,6 @@
 package homez.homes.response;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // Common 에러
     _NOT_FOUND(NOT_FOUND, "해당 값이 없습니다."),
+    DATABASE_ERROR(INTERNAL_SERVER_ERROR, "DB 에러 입니다."),
 
     // Address 에러
     NO_NEARBY_SUBWAY_FOUND(NOT_FOUND, "근처 1km 내에 서울 1~9호선 지하철역이 없습니다."),
