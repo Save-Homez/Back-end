@@ -9,7 +9,7 @@ public class AiConverter {
     public static AiRequest toAiRequest(UserInfo userInfo, String town) {
         return AiRequest.builder()
                 .factors(userInfo.getFactors())
-                .town(town)
+                .town(substringTown(town))
                 .timeRange(userInfo.getTimeRange())
                 .sex(Sex.toCode(userInfo.getSex()))
                 .age(userInfo.getAge())
@@ -18,8 +18,8 @@ public class AiConverter {
                 .build();
     }
 
-    private static String processStation(String station) {
-        String substring = station.substring(0, station.length() - 1);
+    private static String substringTown(String town) {
+        String substring = town.substring(0, town.length() - 1);
         return substring;
     }
 }
