@@ -11,23 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AiResponse {
     @JsonProperty("pointList")
-    private List<AiResult> aiResult;
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class AiResult {
-        @JsonProperty("pointInfo")
-        private List<TownResult> townResults;
-        private String timeRange;
-    }
+    private List<TownResult> aiResult;
 
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class TownResult {
-        private String name;
+        @JsonProperty("name")
+        private String town;
+
         private String matchRate;
-        private int rank;
     }
 }
