@@ -12,7 +12,7 @@ public class AiReportResponse {
     private String totalStatement;
     private List<Factor> graph;
 
-    private String matchRate;
+    private double matchRate;
 
     private int travelTime;
     private String station;

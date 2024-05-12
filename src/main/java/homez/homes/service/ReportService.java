@@ -47,7 +47,7 @@ public class ReportService {
         String totalStatement = generateTotalStatement();
         List<Factor> graph = generateGraph(request.getTown(), request.getFactors());
 //        String matchRate = result.getMatchRate();
-        String matchRate = "88";
+        double matchRate = 88.88;
 
 //        Station station = stationRepository.findByTown(request.getTown())
 //                .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
