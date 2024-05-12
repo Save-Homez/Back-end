@@ -1,6 +1,7 @@
 package homez.homes.response;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import lombok.Getter;
@@ -29,7 +30,10 @@ public enum ErrorCode {
     TOWN_NOT_FOUND(NOT_FOUND, "DB에 해당 동네가 존재하지 않습니다."),
 
     // Cache 에러
-    CACHE_DATA_NOT_FOUND(NOT_FOUND, "해당 캐시 데이터가 없습니다.")
+    CACHE_DATA_NOT_FOUND(NOT_FOUND, "해당 캐시 데이터가 없습니다."),
+
+    // Ai 에러
+    Ai_NOT_SUPPORTED(NOT_IMPLEMENTED, "지원하지 않는 데이터 입니다.")
     ;
 
     private final HttpStatus httpStatus;

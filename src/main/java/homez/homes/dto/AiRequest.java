@@ -15,7 +15,6 @@ public class AiRequest {
     private List<String> factors;
     @JsonProperty("destPoint")
     private String town;
-    private String station;
     private String timeRange;
     private int sex;
     private int age;

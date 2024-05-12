@@ -1,15 +1,15 @@
 package homez.homes.service;
 
+import static homez.homes.response.ErrorCode.Ai_NOT_SUPPORTED;
 import static homez.homes.response.ErrorCode.CACHE_NOT_FOUND;
-import static homez.homes.response.ErrorCode.STATION_NOT_FOUND;
 
 import homez.homes.config.feign.AiClient;
 import homez.homes.converter.AiConverter;
 import homez.homes.dto.AiRequest;
 import homez.homes.dto.AiResponse;
 import homez.homes.dto.UserInfo;
-import homez.homes.repository.StationRepository;
-import homez.homes.repository.StationTownOnly;
+import homez.homes.entity.AiDto;
+import homez.homes.repository.AiDtoRepository;
 import homez.homes.response.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CachePut;
@@ -22,13 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AiService {
     private final AiClient aiClient;
-    private final StationRepository stationRepository;
+    private final AiDtoRepository aiDtoRepository;
 
     @CachePut(value = "aiResponses", key = "#username")
     public AiResponse aiAnalyze(String username, UserInfo userInfo) {
-        StationTownOnly station = stationRepository.findByName(userInfo.getDestination())
-                .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
-        AiRequest request = AiConverter.toAiRequest(userInfo, station.getTown());
+        AiDto aiDto = aiDtoRepository.findByStation(userInfo.getDestination())
+                .orElseThrow(() -> new CustomException(Ai_NOT_SUPPORTED));
+        AiRequest request = AiConverter.toAiRequest(userInfo, aiDto.getTown());
 
         return aiClient.getAiResult(request);
     }

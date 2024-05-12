@@ -24,7 +24,7 @@ public class AiController {
         TokenInfo token = jwtTokenUtils.generateToken();
 
         String username = jwtTokenUtils.getUsernameFromToken(token.getAccessToken());
-//        aiService.aiAnalyze(username, userInfo);
+        aiService.aiAnalyze(username, userInfo);
 
         return Response.success(token);
     }
