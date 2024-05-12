@@ -58,7 +58,7 @@ public class SecurityConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public class CorsFilter extends OncePerRequestFilter {
         private static final List<String> allowedOrigins = Arrays.asList(
-                "https://save-homez.vercel.app", "http://localhost:3000");
+                "https://seoul-ai-house.vercel.app", "http://localhost:3000");
 
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
