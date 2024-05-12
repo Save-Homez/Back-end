@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class TownGraph {
+public class Town {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
