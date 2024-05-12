@@ -25,6 +25,6 @@ public class AiReportResponse {
     @NoArgsConstructor
     public static class Factor {
         private String name;
-        private String percent;
+        private int percent;
     }
 }
