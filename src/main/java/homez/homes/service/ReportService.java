@@ -22,11 +22,15 @@ import static homez.homes.response.ErrorCode.DATABASE_ERROR;
 import static homez.homes.response.ErrorCode.STATION_NOT_FOUND;
 import static homez.homes.response.ErrorCode.TOWN_NOT_FOUND;
 
+import homez.homes.config.feign.OpenaiClient;
 import homez.homes.dto.AgencyResponse;
 import homez.homes.dto.AiReportRequest;
 import homez.homes.dto.AiReportResponse;
 import homez.homes.dto.AiReportResponse.Factor;
 import homez.homes.dto.AiResponse.TownResult;
+import homez.homes.dto.OpenaiRequest;
+import homez.homes.dto.OpenaiRequest.Message;
+import homez.homes.dto.OpenaiResponse;
 import homez.homes.dto.PropertyResponse;
 import homez.homes.entity.Station;
 import homez.homes.entity.Town;
@@ -47,13 +51,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReportService {
+    private final String GPT_MODEL = "gpt-3.5-turbo";
+    private final String GPT_ROLE = "system";
     private final int PAGE_SIZE = 10;
 
     private final PropertyRepository propertyRepository;
@@ -62,11 +70,12 @@ public class ReportService {
     private final StationRepository stationRepository;
     private final TravelTimeRepository travelTimeRepository;
     private final AiService aiService;
+    private final OpenaiClient openaiClient;
 
     public AiReportResponse getAiReport(AiReportRequest request, String username) {
-        String totalStatement = generateTotalStatement();
         List<Factor> graph = getGraph(request);
         double matchRate = getMatchRate(request, username);
+        String totalStatement = getTotalStatement(request.getTown(), request.getFactors(), graph, matchRate);
 
         TravelTime travelTime = travelTimeRepository.findByOriginAndDestination(request.getStation(),
                         request.getDestination())
@@ -95,15 +104,6 @@ public class ReportService {
         return graph;
     }
 
-    private double getMatchRate(AiReportRequest request, String username) {
-        List<TownResult> aiResults = aiService.getCachedAiResponse(username).getAiResult();
-        TownResult result = aiResults.stream()
-                .filter(townResult -> townResult.getTown().equals(request.getTown()))
-                .findFirst()
-                .orElseThrow(() -> new CustomException(Ai_NOT_SUPPORTED));
-        return Double.parseDouble(result.getMatchRate());
-    }
-
     private List<Factor> normalizeFactors(HashMap<FactorResult, Double> factorMap, HashSet<String> usedFactors, List<Factor> graph) {
         if (graph.size() == 6) {
             return graph;
@@ -120,13 +120,55 @@ public class ReportService {
                 .filter(name -> !usedFactors.contains(name))
                 .collect(Collectors.toList());
         Collections.shuffle(availableFactors);
-        
+
         while (graph.size() < 6 && !availableFactors.isEmpty()) {
             String factor = availableFactors.remove(0);
             Double percent = factorMap.get(fromName(factor));
             graph.add(new Factor(factor, (int) (percent * 100)));
         }
         return graph;
+    }
+
+    private double getMatchRate(AiReportRequest request, String username) {
+        List<TownResult> aiResults = aiService.getCachedAiResponse(username).getAiResult();
+        TownResult result = aiResults.stream()
+                .filter(townResult -> townResult.getTown().equals(request.getTown()))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(Ai_NOT_SUPPORTED));
+        return Double.parseDouble(result.getMatchRate());
+    }
+
+    private String getTotalStatement(String town, List<String> inputFactors, List<Factor> graph, double matchRate) {
+        OpenaiRequest request = getOpenaiRequest(town, inputFactors, graph, matchRate);
+        OpenaiResponse response = openaiClient.generateTotalStatement(request);
+        return response.getChoices().get(0).getMessage().getContent();
+    }
+
+    private OpenaiRequest getOpenaiRequest(String town, List<String> inputFactors, List<Factor> graph, double matchRate) {
+        Message message = Message.builder()
+                .role(GPT_ROLE)
+                .content(generatePrompt(town, inputFactors, graph, matchRate))
+                .build();
+
+        return OpenaiRequest.builder()
+                .model(GPT_MODEL)
+                .messages(List.of(message))
+                .build();
+    }
+
+    private String generatePrompt(String town, List<String> inputFactors, List<Factor> graph, double matchRate) {
+        String result =  String.format("유저와 '%s'에 대한 200자 이내 짧은 총 평을 써줘. "
+                        + "유저 선호 요소: %s. "
+                        + "'%s' 그래프 (0~100): %s(%d), %s(%d), %s(%d), %s(%d), %s(%d), %s(%d). "
+                        + "유저-'%s' 매칭률: %s%%.",
+                town,
+                inputFactors.toString(),
+                town, graph.get(0).getName(), graph.get(0).getPercent(), graph.get(1).getName(), graph.get(1).getPercent(),
+                graph.get(2).getName(), graph.get(2).getPercent(), graph.get(3).getName(), graph.get(3).getPercent(),
+                graph.get(4).getName(), graph.get(4).getPercent(), graph.get(5).getName(), graph.get(5).getPercent(),
+                town, matchRate);
+        log.info("프롬프트: {}", result);
+        return result;
     }
 
     private HashMap<FactorResult, Double> getFactorMap(Town town) {
@@ -148,10 +190,6 @@ public class ReportService {
         factorMap.put(CLEAN, town.getClean());
         factorMap.put(PARKING, town.getParking());
         return factorMap;
-    }
-
-    private String generateTotalStatement() {
-        return "AI 종합 분석 준비 중 입니다.";
     }
 
     public PropertyResponse getProperties(String town) {
