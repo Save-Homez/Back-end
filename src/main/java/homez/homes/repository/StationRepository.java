@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface StationRepository extends JpaRepository<Station, Long> {
+public interface StationRepository extends JpaRepository<Station, Long>, StationRepositoryCustom {
     @Query(value = "SELECT * FROM station s WHERE ST_Distance_Sphere(point(:longitude, :latitude), s.coordinate) <= :radius", nativeQuery = true)
     List<Station> findWithinRadius(@Param("longitude") double longitude, @Param("latitude") double latitude,
                                    @Param("radius") int radius);

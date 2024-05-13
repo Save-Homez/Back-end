@@ -15,21 +15,20 @@ public class Town {
 
     private String town;
 
-    private String pharmacy;
-    private String womenWelfare;
-    private String education;
-    private String culture;
-    private String movie;
-    private String art;
-    private String concert;
-    private String park;
-    private String library;
-    private String green;
-    private String noise;
-    private String air;
-    private String rest;
-    private String water;
-    private String safety;
-    private String clean;
-    private String parking;
+    private double pharmacy;
+    private double womenWelfare;
+    private double education;
+    private double culture;
+    private double movie;
+    private double art;
+    private double park;
+    private double library;
+    private double green;
+    private double noise;
+    private double air;
+    private double rest;
+    private double water;
+    private double safety;
+    private double clean;
+    private double parking;
 }

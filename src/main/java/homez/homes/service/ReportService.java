@@ -1,23 +1,48 @@
 package homez.homes.service;
 
-import static homez.homes.response.ErrorCode._NOT_FOUND;
+import static homez.homes.entity.constant.FactorResult.*;
+import static homez.homes.entity.constant.FactorResult.AIR;
+import static homez.homes.entity.constant.FactorResult.ART;
+import static homez.homes.entity.constant.FactorResult.CLEAN;
+import static homez.homes.entity.constant.FactorResult.CULTURE;
+import static homez.homes.entity.constant.FactorResult.EDUCATION;
+import static homez.homes.entity.constant.FactorResult.GREEN;
+import static homez.homes.entity.constant.FactorResult.LIBRARY;
+import static homez.homes.entity.constant.FactorResult.MOVIE;
+import static homez.homes.entity.constant.FactorResult.NOISE;
+import static homez.homes.entity.constant.FactorResult.PARK;
+import static homez.homes.entity.constant.FactorResult.PARKING;
+import static homez.homes.entity.constant.FactorResult.PHARMACY;
+import static homez.homes.entity.constant.FactorResult.REST;
+import static homez.homes.entity.constant.FactorResult.SAFETY;
+import static homez.homes.entity.constant.FactorResult.WATER;
+import static homez.homes.entity.constant.FactorResult.WOMEN_WELFARE;
+import static homez.homes.response.ErrorCode.Ai_NOT_SUPPORTED;
+import static homez.homes.response.ErrorCode.DATABASE_ERROR;
+import static homez.homes.response.ErrorCode.STATION_NOT_FOUND;
+import static homez.homes.response.ErrorCode.TOWN_NOT_FOUND;
 
 import homez.homes.converter.ReportConverter;
 import homez.homes.dto.AgencyResponse;
 import homez.homes.dto.AiReportRequest;
 import homez.homes.dto.AiReportResponse;
 import homez.homes.dto.AiReportResponse.Factor;
+import homez.homes.dto.AiResponse.TownResult;
 import homez.homes.dto.PropertyResponse;
 import homez.homes.entity.Agency;
 import homez.homes.entity.Property;
 import homez.homes.entity.Station;
+import homez.homes.entity.Town;
 import homez.homes.entity.TravelTime;
+import homez.homes.entity.constant.FactorResult;
 import homez.homes.repository.AgencyRepository;
 import homez.homes.repository.PropertyRepository;
 import homez.homes.repository.StationRepository;
-import homez.homes.repository.TownGraphRepository;
+import homez.homes.repository.TownRepository;
 import homez.homes.repository.TravelTimeRepository;
 import homez.homes.response.CustomException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -33,57 +58,66 @@ public class ReportService {
 
     private final PropertyRepository propertyRepository;
     private final AgencyRepository agencyRepository;
-    private final TownGraphRepository townGraphRepository;
+    private final TownRepository townRepository;
     private final StationRepository stationRepository;
     private final TravelTimeRepository travelTimeRepository;
     private final AiService aiService;
 
     public AiReportResponse getAiReport(AiReportRequest request, String username) {
-//        TownResult result = getTownResult(request.getTimeRange(), request.getTown(), username);
+        List<TownResult> aiResults = aiService.getCachedAiResponse(username).getAiResult();
+        TownResult result = aiResults.stream()
+                .filter(townResult -> townResult.getTown().equals(request.getTown()))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(Ai_NOT_SUPPORTED));
 
         String totalStatement = generateTotalStatement();
-        List<Factor> graph = generateGraph(request.getTown(), request.getFactors());
-//        String matchRate = result.getMatchRate();
-        double matchRate = 88.88;
 
-//        Station station = stationRepository.findByTown(request.getTown())
-//                .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
-        Station station = new Station(100L, "신촌동역", "신촌동", null,
-                3000, 50, 5000);
-        TravelTime travelTime = travelTimeRepository.findByOriginAndDestination(station.getName(),
+        Town town = townRepository.findByTown(request.getTown())
+                .orElseThrow(() -> new CustomException(TOWN_NOT_FOUND));
+
+        HashMap<FactorResult, Double> factorMap = getFactorMap(town);
+        List<Factor> graph = new ArrayList<>();
+        List<String> factors = request.getFactors();
+        for (String factor : factors) {
+            Double percent = factorMap.get(fromName(factor));
+            graph.add(new Factor(factor, (int) (percent * 100)));
+        }
+
+        Station station = stationRepository.findOneByName(request.getStation())
+                .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
+
+        TravelTime travelTime = travelTimeRepository.findByOriginAndDestination(request.getStation(),
                         request.getDestination())
-                .orElseThrow(() -> new CustomException(_NOT_FOUND, "해당 TravelTime이 없습니다."));
+                .orElseThrow(() -> new CustomException(DATABASE_ERROR, "DB에 해당 역 간 이동시간이 없습니다."));
 
-        return new AiReportResponse(totalStatement, graph, matchRate, travelTime.getTime(), station.getName(),
+        return new AiReportResponse(totalStatement, graph, Double.parseDouble(result.getMatchRate()), travelTime.getTime(), station.getName(),
                 station.getAvgDeposit(), station.getAvgRental(), station.getAvgLump());
     }
 
-    private List<Factor> generateGraph(String town, List<String> onBoard) {
-//        TownGraph townGraph = townGraphRepository.findByTown(town)
-//                .orElseThrow(() -> new CustomException(TOWN_NOT_FOUND));
-
-        Factor f1 = new Factor("영화관", 33);
-        Factor f2 = new Factor("미술관", 89);
-        Factor f3 = new Factor("문화 복지 시설", 100);
-        Factor f4 = new Factor("여성 복지 시설", 0);
-        Factor f5 = new Factor("약국", 20);
-        Factor f6 = new Factor("녹지 분포", 78);
-
-        return List.of(f1, f2, f3, f4, f5, f6);
+    private HashMap<FactorResult, Double> getFactorMap(Town town) {
+        HashMap<FactorResult, Double> factorMap = new HashMap<>();
+        factorMap.put(PHARMACY, town.getPharmacy());
+        factorMap.put(WOMEN_WELFARE, town.getWomenWelfare());
+        factorMap.put(EDUCATION, town.getEducation());
+        factorMap.put(CULTURE, town.getCulture());
+        factorMap.put(MOVIE, town.getMovie());
+        factorMap.put(ART, town.getArt());
+        factorMap.put(PARK, town.getPark());
+        factorMap.put(LIBRARY, town.getLibrary());
+        factorMap.put(GREEN, town.getGreen());
+        factorMap.put(NOISE, town.getNoise());
+        factorMap.put(AIR, town.getAir());
+        factorMap.put(REST, town.getRest());
+        factorMap.put(WATER, town.getWater());
+        factorMap.put(SAFETY, town.getSafety());
+        factorMap.put(CLEAN, town.getClean());
+        factorMap.put(PARKING, town.getParking());
+        return factorMap;
     }
 
     private String generateTotalStatement() {
-        return "종합 분석 결과 어쩌고 저쩌고 블라블라";
+        return "AI 종합 분석 준비 중 입니다.";
     }
-//
-//    private TownResult getTownResult(String timeRange, String town, String username) {
-//        List<TownResult> results = aiService.getCachedAiResponse(username).getAiResult()
-//                .get(TimeRange.valueOf(timeRange).getCode()).getTownResults();
-//        return results.stream()
-//                .filter(r -> r.getName().equals(town))
-//                .findFirst()
-//                .orElseThrow(() -> new CustomException(CACHE_NOT_FOUND, "캐시 값에 해당 동네가 존재하지 않습니다."));
-//    }
 
     public PropertyResponse getProperties(String town) {
         Pageable firstTen = PageRequest.of(0, PAGE_SIZE);

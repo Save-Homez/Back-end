@@ -1,5 +1,6 @@
 package homez.homes.response;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NOT_IMPLEMENTED;
@@ -35,7 +36,10 @@ public enum ErrorCode {
     CACHE_DATA_NOT_FOUND(NOT_FOUND, "해당 캐시 데이터가 없습니다."),
 
     // Ai 에러
-    Ai_NOT_SUPPORTED(NOT_IMPLEMENTED, "지원하지 않는 데이터 입니다.")
+    Ai_NOT_SUPPORTED(NOT_IMPLEMENTED, "지원하지 않는 데이터 입니다."),
+
+    // Factor 에러
+    FACTOR_NOT_FOUND(BAD_REQUEST, "Factor 입력 값이 틀렸습니다.")
     ;
 
     private final HttpStatus httpStatus;
