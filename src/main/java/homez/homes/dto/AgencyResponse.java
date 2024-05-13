@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AgencyResponse {
     private String town;
     private List<AgencyDto> agencies;
