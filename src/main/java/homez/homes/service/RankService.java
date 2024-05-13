@@ -1,5 +1,9 @@
 package homez.homes.service;
 
+import static homez.homes.entity.constant.TimeRange.OVER_90_MINUTES;
+import static homez.homes.entity.constant.TimeRange.WITHIN_30_MINUTES;
+import static homez.homes.entity.constant.TimeRange.WITHIN_60_MINUTES;
+import static homez.homes.entity.constant.TimeRange.WITHIN_90_MINUTES;
 import static homez.homes.entity.constant.TimeRange.fromTime;
 import static homez.homes.response.ErrorCode.DATABASE_ERROR;
 import static homez.homes.response.ErrorCode.STATION_NOT_FOUND;
@@ -42,8 +46,8 @@ public class RankService {
     }
 
     private Map<TimeRange, List<TownCard>> getTimeMap(List<TownResult> aiResult, String destination) {
-        Map<TimeRange, List<TownCard>> timeMap = new HashMap<>();
-        Map<TimeRange, Integer> countMap = new HashMap<>();
+        Map<TimeRange, List<TownCard>> timeMap = initTimeMap();
+        Map<TimeRange, Integer> countMap = initCountMap();
 
         for (TownResult townResult : aiResult) {
             TownCard townCard = getTownCard(destination, townResult.getTown());
@@ -81,5 +85,23 @@ public class RankService {
 
         return new TownCard(town, travelTime.getTime(), station.getAvgDeposit(), station.getAvgRental(), station.getAvgLump(),
                 station.getCoordinate().getX(), station.getCoordinate().getY(), station.getName());
+    }
+
+    private Map<TimeRange, List<TownCard>> initTimeMap() {
+        Map<TimeRange, List<TownCard>> timeMap = new HashMap<>();
+        timeMap.put(WITHIN_30_MINUTES, new ArrayList<>());
+        timeMap.put(WITHIN_60_MINUTES, new ArrayList<>());
+        timeMap.put(WITHIN_90_MINUTES, new ArrayList<>());
+        timeMap.put(OVER_90_MINUTES, new ArrayList<>());
+        return timeMap;
+    }
+
+    private Map<TimeRange, Integer> initCountMap() {
+        Map<TimeRange, Integer> countMap = new HashMap<>();
+        countMap.put(WITHIN_30_MINUTES, 0);
+        countMap.put(WITHIN_60_MINUTES, 0);
+        countMap.put(WITHIN_90_MINUTES, 0);
+        countMap.put(OVER_90_MINUTES, 0);
+        return countMap;
     }
 }
