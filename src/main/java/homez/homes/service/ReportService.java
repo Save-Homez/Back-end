@@ -41,8 +41,11 @@ import homez.homes.repository.TravelTimeRepository;
 import homez.homes.response.CustomException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,35 +64,69 @@ public class ReportService {
     private final AiService aiService;
 
     public AiReportResponse getAiReport(AiReportRequest request, String username) {
-        List<TownResult> aiResults = aiService.getCachedAiResponse(username).getAiResult();
-        TownResult result = aiResults.stream()
-                .filter(townResult -> townResult.getTown().equals(request.getTown()))
-                .findFirst()
-                .orElseThrow(() -> new CustomException(Ai_NOT_SUPPORTED));
-
         String totalStatement = generateTotalStatement();
-
-        Town town = townRepository.findByTown(request.getTown())
-                .orElseThrow(() -> new CustomException(TOWN_NOT_FOUND));
-
-        HashMap<FactorResult, Double> factorMap = getFactorMap(town);
-        List<Factor> graph = new ArrayList<>();
-        List<String> factors = request.getFactors();
-        for (String factor : factors) {
-            Double percent = factorMap.get(fromName(factor));
-            graph.add(new Factor(factor, (int) (percent * 100)));
-        }
-
-        Station station = stationRepository.findOneByName(request.getStation())
-                .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
+        List<Factor> graph = getGraph(request);
+        double matchRate = getMatchRate(request, username);
 
         TravelTime travelTime = travelTimeRepository.findByOriginAndDestination(request.getStation(),
                         request.getDestination())
                 .orElseThrow(() -> new CustomException(DATABASE_ERROR, "DB에 해당 역 간 이동시간이 없습니다."));
 
-        return new AiReportResponse(totalStatement, graph, Double.parseDouble(result.getMatchRate()),
-                travelTime.getTime(), station.getName(),
-                station.getAvgDeposit(), station.getAvgRental(), station.getAvgLump());
+        Station station = stationRepository.findOneByName(request.getStation())
+                .orElseThrow(() -> new CustomException(STATION_NOT_FOUND));
+
+        return new AiReportResponse(totalStatement, graph, matchRate, travelTime.getTime(),
+                station.getName(), station.getAvgDeposit(), station.getAvgRental(), station.getAvgLump());
+    }
+
+    private List<Factor> getGraph(AiReportRequest request) {
+        Town town = townRepository.findByTown(request.getTown())
+                .orElseThrow(() -> new CustomException(TOWN_NOT_FOUND));
+        HashMap<FactorResult, Double> factorMap = getFactorMap(town);
+
+        List<Factor> graph = new ArrayList<>();
+        List<String> inputFactors = request.getFactors();
+        for (String factor : inputFactors) {
+            Double percent = factorMap.get(fromName(factor));
+            graph.add(new Factor(factor, (int) (percent * 100)));
+        }
+
+        graph = normalizeFactors(factorMap, new HashSet<String>(inputFactors), graph);
+        return graph;
+    }
+
+    private double getMatchRate(AiReportRequest request, String username) {
+        List<TownResult> aiResults = aiService.getCachedAiResponse(username).getAiResult();
+        TownResult result = aiResults.stream()
+                .filter(townResult -> townResult.getTown().equals(request.getTown()))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(Ai_NOT_SUPPORTED));
+        return Double.parseDouble(result.getMatchRate());
+    }
+
+    private List<Factor> normalizeFactors(HashMap<FactorResult, Double> factorMap, HashSet<String> usedFactors, List<Factor> graph) {
+        if (graph.size() == 6) {
+            return graph;
+        }
+        if (graph.size() > 6) {
+            Collections.shuffle(graph);
+            return graph.subList(0, 6);
+        }
+        return fillRandomFactors(factorMap, usedFactors, graph);
+    }
+
+    private List<Factor> fillRandomFactors(HashMap<FactorResult, Double> factorMap, HashSet<String> usedFactors, List<Factor> graph) {
+        List<String> availableFactors = factorMap.keySet().stream().map(FactorResult::getName)
+                .filter(name -> !usedFactors.contains(name))
+                .collect(Collectors.toList());
+        Collections.shuffle(availableFactors);
+        
+        while (graph.size() < 6 && !availableFactors.isEmpty()) {
+            String factor = availableFactors.remove(0);
+            Double percent = factorMap.get(fromName(factor));
+            graph.add(new Factor(factor, (int) (percent * 100)));
+        }
+        return graph;
     }
 
     private HashMap<FactorResult, Double> getFactorMap(Town town) {
