@@ -1,6 +1,5 @@
 package homez.homes.service;
 
-import static homez.homes.entity.constant.FactorResult.*;
 import static homez.homes.entity.constant.FactorResult.AIR;
 import static homez.homes.entity.constant.FactorResult.ART;
 import static homez.homes.entity.constant.FactorResult.CLEAN;
@@ -17,6 +16,7 @@ import static homez.homes.entity.constant.FactorResult.REST;
 import static homez.homes.entity.constant.FactorResult.SAFETY;
 import static homez.homes.entity.constant.FactorResult.WATER;
 import static homez.homes.entity.constant.FactorResult.WOMEN_WELFARE;
+import static homez.homes.entity.constant.FactorResult.fromName;
 import static homez.homes.response.ErrorCode.Ai_NOT_SUPPORTED;
 import static homez.homes.response.ErrorCode.DATABASE_ERROR;
 import static homez.homes.response.ErrorCode.STATION_NOT_FOUND;
@@ -30,11 +30,11 @@ import homez.homes.dto.AiReportResponse.Factor;
 import homez.homes.dto.AiResponse.TownResult;
 import homez.homes.dto.PropertyResponse;
 import homez.homes.entity.Agency;
-import homez.homes.entity.Property;
 import homez.homes.entity.Station;
 import homez.homes.entity.Town;
 import homez.homes.entity.TravelTime;
 import homez.homes.entity.constant.FactorResult;
+import homez.homes.entity.constant.RentType;
 import homez.homes.repository.AgencyRepository;
 import homez.homes.repository.PropertyRepository;
 import homez.homes.repository.StationRepository;
@@ -42,11 +42,10 @@ import homez.homes.repository.TownRepository;
 import homez.homes.repository.TravelTimeRepository;
 import homez.homes.response.CustomException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -120,9 +119,72 @@ public class ReportService {
     }
 
     public PropertyResponse getProperties(String town) {
-        Pageable firstTen = PageRequest.of(0, PAGE_SIZE);
-        List<Property> properties = propertyRepository.findPropertiesByTownOrderByRandom(town, firstTen);
-        return ReportConverter.propertiesToResponse(town, properties);
+        return generatePropertyResponse();
+
+//        Pageable firstTen = PageRequest.of(0, PAGE_SIZE);
+//        List<Property> properties = propertyRepository.findPropertiesByTownOrderByRandom(town, firstTen);
+//        return ReportConverter.propertiesToResponse(town, properties);
+    }
+
+    private PropertyResponse generatePropertyResponse() {
+        // PropertyDto 객체 생성
+        PropertyResponse.PropertyDto dto1 = PropertyResponse.PropertyDto.builder()
+                .name("벽산스마트큐브")
+                .area(31.12)
+                .type("오피스텔")
+                .floor(9)
+                .rentType(RentType.LUMP)  // 이 부분은 RentType 열거형에 따라 다름
+                .deposit(1200)
+                .rental(0)
+                .build();
+
+        PropertyResponse.PropertyDto dto2 = PropertyResponse.PropertyDto.builder()
+                .name("유림트윈파크")
+                .area(19.99)
+                .type("오피스텔")
+                .floor(4)
+                .rentType(RentType.MONTH)  // 이 부분은 RentType 열거형에 따라 다름
+                .deposit(1000)
+                .rental(75)
+                .build();
+
+        PropertyResponse.PropertyDto dto3 = PropertyResponse.PropertyDto.builder()
+                .name("디에이치아너힐즈")
+                .area(84.63)
+                .type("아파트")
+                .floor(18)
+                .rentType(RentType.LUMP)  // 이 부분은 RentType 열거형에 따라 다름
+                .deposit(92400)
+                .rental(0)
+                .build();
+
+        PropertyResponse.PropertyDto dto4 = PropertyResponse.PropertyDto.builder()
+                .name("해담하우스2차")
+                .area(47.31)
+                .type("연립다세대")
+                .floor(5)
+                .rentType(RentType.MONTH)  // 이 부분은 RentType 열거형에 따라 다름
+                .deposit(3084)
+                .rental(32)
+                .build();
+
+        PropertyResponse.PropertyDto dto5 = PropertyResponse.PropertyDto.builder()
+                .name("라이프미성")
+                .area(66.7)
+                .type("아파트")
+                .floor(11)
+                .rentType(RentType.MONTH)  // 이 부분은 RentType 열거형에 따라 다름
+                .deposit(5000)
+                .rental(100)
+                .build();
+
+        // PropertyResponse 객체 생성
+        PropertyResponse response = PropertyResponse.builder()
+                .town("anything")
+                .properties(Arrays.asList(dto1, dto2, dto3, dto4, dto5))
+                .build();
+
+        return response;
     }
 
     public AgencyResponse getAgencies(String town) {

@@ -20,9 +20,9 @@ public class Property {
 
     private String name;
 
-    private String address;
+    private double area;
 
-    private float area;
+    private String type;
 
     private int floor;
 

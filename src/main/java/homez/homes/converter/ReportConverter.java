@@ -15,8 +15,8 @@ public class ReportConverter {
                 .map(property ->
                         PropertyDto.builder()
                                 .name(property.getName())
-                                .address(property.getAddress())
                                 .area(property.getArea())
+                                .type(property.getType())
                                 .floor(property.getFloor())
                                 .rentType(property.getRentType())
                                 .deposit(property.getDeposit())

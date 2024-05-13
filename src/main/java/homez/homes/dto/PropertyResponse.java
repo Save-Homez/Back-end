@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PropertyResponse {
 
     private String town;
@@ -22,8 +23,8 @@ public class PropertyResponse {
     public static class PropertyDto {
 
         private String name;
-        private String address;
-        private float area;
+        private double area;
+        private String type;
         private int floor;
         private RentType rentType;
         private int deposit;
