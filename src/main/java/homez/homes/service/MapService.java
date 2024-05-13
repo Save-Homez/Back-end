@@ -6,7 +6,9 @@ import homez.homes.entity.Station;
 import homez.homes.entity.TravelTime;
 import homez.homes.repository.StationRepository;
 import homez.homes.repository.TravelTimeRepository;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,14 @@ public class MapService {
                 .stream()
                 .filter(s -> !s.getName().equals(destination))
                 .collect(Collectors.toList());
+        stations = stations.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(
+                                Station::getName,
+                                Function.identity(),
+                                (existing, replacement) -> existing),
+                        map -> new ArrayList<>(map.values())
+                ));
         List<TravelTime> travelTimes = travelTimeRepository
                 .findByOriginAndDestinations(destination, MapConverter.toStationNames(stations));
         return MapConverter.toMapResponse(stations, MapConverter.toTravelTimeMap(travelTimes));

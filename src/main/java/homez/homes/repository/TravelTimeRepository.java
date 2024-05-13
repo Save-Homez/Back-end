@@ -10,6 +10,5 @@ public interface TravelTimeRepository extends JpaRepository<TravelTime, Long> {
     @Query("SELECT t FROM TravelTime t WHERE t.destination = :destination AND t.origin IN :origins")
     List<TravelTime> findByOriginAndDestinations(String destination, List<String> origins);
     List<TravelTime> findByDestination(String destination);
-    List<TravelTime> findByOrigin(String origin);
     Optional<TravelTime> findByOriginAndDestination(String origin, String destination);
 }
