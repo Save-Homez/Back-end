@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "ai-client", url = "${feign.ai-client.url}")
 public interface AiClient {
-    @PostMapping("/api/report/ml")
+    @PostMapping("/api/report/ml-list")
     AiResponse getAiResult(@RequestBody AiRequest request);
 }
