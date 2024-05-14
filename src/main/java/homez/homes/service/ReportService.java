@@ -62,6 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReportService {
     private final String GPT_MODEL = "gpt-3.5-turbo";
     private final String GPT_ROLE = "system";
+    private final String REPORT_START_STATEMENT = "서울시집 AI 분석 결과, ";
     private final int PAGE_SIZE = 10;
 
     private final PropertyRepository propertyRepository;
@@ -75,7 +76,7 @@ public class ReportService {
     public AiReportResponse getAiReport(AiReportRequest request, String username) {
         List<Factor> graph = getGraph(request);
         double matchRate = getMatchRate(request, username);
-        String totalStatement = getTotalStatement(request.getTown(), request.getFactors(), graph, matchRate);
+        String totalStatement = REPORT_START_STATEMENT + getTotalStatement(request.getTown(), request.getFactors(), graph, matchRate);
 
         TravelTime travelTime = travelTimeRepository.findByOriginAndDestination(request.getStation(),
                         request.getDestination())
