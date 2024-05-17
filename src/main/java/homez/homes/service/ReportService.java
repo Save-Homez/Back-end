@@ -23,6 +23,7 @@ import static homez.homes.response.ErrorCode.STATION_NOT_FOUND;
 import static homez.homes.response.ErrorCode.TOWN_NOT_FOUND;
 
 import homez.homes.config.feign.OpenaiClient;
+import homez.homes.converter.ReportConverter;
 import homez.homes.dto.AgencyResponse;
 import homez.homes.dto.AiReportRequest;
 import homez.homes.dto.AiReportResponse;
@@ -32,6 +33,7 @@ import homez.homes.dto.OpenaiRequest;
 import homez.homes.dto.OpenaiRequest.Message;
 import homez.homes.dto.OpenaiResponse;
 import homez.homes.dto.PropertyResponse;
+import homez.homes.entity.Agency;
 import homez.homes.entity.Station;
 import homez.homes.entity.Town;
 import homez.homes.entity.TravelTime;
@@ -49,9 +51,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,10 +64,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReportService {
-    private final String GPT_MODEL = "gpt-3.5-turbo";
-    private final String GPT_ROLE = "system";
-    private final String REPORT_START_STATEMENT = "서울시집 AI 분석 결과, ";
-    private final int PAGE_SIZE = 10;
+    private static final String GPT_MODEL = "gpt-3.5-turbo";
+    private static final String GPT_ROLE = "system";
+    private static final String REPORT_START_STATEMENT = "서울시집 AI 분석 결과, ";
+    private static final Set<String> GANGSEO_TOWN = new HashSet<>(Arrays.asList(
+            "가양2동", "방화2동", "공항동", "발산1동", "방화1동", "염창동", "우장산동", "방화3동"
+    )); // 강서구 공인중개사 수가 적어서 따로 처리
+    private static final int PAGE_SIZE = 10;
+
 
     private final PropertyRepository propertyRepository;
     private final AgencyRepository agencyRepository;
@@ -263,61 +271,16 @@ public class ReportService {
     }
 
     public AgencyResponse getAgencies(String town) {
-        return generateAgencyResponse();
-//        List<Agency> agencies = agencyRepository.findAgenciesByTownOrderByRandom(town);
-//        return ReportConverter.agenciesToResponse(town, agencies);
+        List<Agency> agencies = findAgencies(town);
+        return ReportConverter.agenciesToResponse(town, agencies);
     }
 
-    private AgencyResponse generateAgencyResponse() {
-        // AgencyDto 객체 생성
-        AgencyResponse.AgencyDto agency1 = AgencyResponse.AgencyDto.builder()
-                .name("참조은공인중개사사무소")
-                .phone("02-906-9933")
-                .address("서울특별시 강북구 삼양로87길 31 1층")
-                .build();
+    private List<Agency> findAgencies(String town) {
+        if (GANGSEO_TOWN.contains(town)) {
+            return agencyRepository.findByAddressLike("강서구");
+        }
 
-        AgencyResponse.AgencyDto agency2 = AgencyResponse.AgencyDto.builder()
-                .name("랜드원공인중개사사무소")
-                .phone("02-999-6111")
-                .address("서울특별시 강북구 수유로 61 1층")
-                .build();
-
-        AgencyResponse.AgencyDto agency3 = AgencyResponse.AgencyDto.builder()
-                .name("행운공인중개사사무소")
-                .phone("02-983-3759")
-                .address("서울특별시 강북구 한천로155길 43 상가A동 128호")
-                .build();
-
-        AgencyResponse.AgencyDto agency4 = AgencyResponse.AgencyDto.builder()
-                .name("동행부동산공인중개사사무소")
-                .phone("02-996-3357")
-                .address("서울특별시 강북구 수유로 65-2 102호")
-                .build();
-
-        AgencyResponse.AgencyDto agency5 = AgencyResponse.AgencyDto.builder()
-                .name("수유OK부동산공인중개사사무소")
-                .phone("02-930-1123")
-                .address("서울특별시 강북구 수유로 32 1층")
-                .build();
-
-        AgencyResponse.AgencyDto agency6 = AgencyResponse.AgencyDto.builder()
-                .name("지안공인중개사사무소")
-                .phone("02-989-8949")
-                .address("서울특별시 강북구 삼각산로 147 1층")
-                .build();
-
-        AgencyResponse.AgencyDto agency7 = AgencyResponse.AgencyDto.builder()
-                .name("빨래골공인중개사사무소")
-                .phone("02-989-8833")
-                .address("서울특별시 강북구 삼양로79길 20 1층")
-                .build();
-
-        // AgencyResponse 객체 생성
-        AgencyResponse response = AgencyResponse.builder()
-                .town("anything")
-                .agencies(Arrays.asList(agency1, agency2, agency3, agency4, agency5, agency6, agency7))
-                .build();
-
-        return response;
+        PageRequest firstTen = PageRequest.of(0, PAGE_SIZE);
+        return agencyRepository.findByTownOrderByRandom(town, firstTen);
     }
 }
