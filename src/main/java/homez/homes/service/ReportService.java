@@ -73,7 +73,6 @@ public class ReportService {
     )); // 강서구 공인중개사 수가 적어서 따로 처리
     private static final int PAGE_SIZE = 10;
 
-
     private final PropertyRepository propertyRepository;
     private final AgencyRepository agencyRepository;
     private final TownRepository townRepository;
@@ -107,11 +106,42 @@ public class ReportService {
         List<String> inputFactors = request.getFactors();
         for (String factor : inputFactors) {
             Double percent = factorMap.get(fromName(factor));
-            graph.add(new Factor(factor, (int) (percent * 100)));
+            graph.add(new Factor(factor, padValue(percent)));
         }
 
         graph = normalizeFactors(factorMap, new HashSet<String>(inputFactors), graph);
         return graph;
+    }
+
+    private HashMap<FactorResult, Double> getFactorMap(Town town) {
+        HashMap<FactorResult, Double> factorMap = new HashMap<>();
+        factorMap.put(PHARMACY, town.getPharmacy());
+        factorMap.put(WOMEN_WELFARE, town.getWomenWelfare());
+        factorMap.put(EDUCATION, town.getEducation());
+        factorMap.put(CULTURE, town.getCulture());
+        factorMap.put(MOVIE, town.getMovie());
+        factorMap.put(ART, town.getArt());
+        factorMap.put(PARK, town.getPark());
+        factorMap.put(LIBRARY, town.getLibrary());
+        factorMap.put(GREEN, town.getGreen());
+        factorMap.put(NOISE, town.getNoise());
+        factorMap.put(AIR, town.getAir());
+        factorMap.put(REST, town.getRest());
+        factorMap.put(WATER, town.getWater());
+        factorMap.put(SAFETY, town.getSafety());
+        factorMap.put(CLEAN, town.getClean());
+        factorMap.put(PARKING, town.getParking());
+        return factorMap;
+    }
+
+    private static int padValue(Double percent) {
+        if (percent == 0) {
+            return 5;
+        }
+        if (percent == 1) {
+            return 95;
+        }
+        return (int) (percent * 100);
     }
 
     private List<Factor> normalizeFactors(HashMap<FactorResult, Double> factorMap, HashSet<String> usedFactors, List<Factor> graph) {
@@ -134,7 +164,7 @@ public class ReportService {
         while (graph.size() < 6 && !availableFactors.isEmpty()) {
             String factor = availableFactors.remove(0);
             Double percent = factorMap.get(fromName(factor));
-            graph.add(new Factor(factor, (int) (percent * 100)));
+            graph.add(new Factor(factor, padValue(percent)));
         }
         return graph;
     }
@@ -181,27 +211,6 @@ public class ReportService {
         return result;
     }
 
-    private HashMap<FactorResult, Double> getFactorMap(Town town) {
-        HashMap<FactorResult, Double> factorMap = new HashMap<>();
-        factorMap.put(PHARMACY, town.getPharmacy());
-        factorMap.put(WOMEN_WELFARE, town.getWomenWelfare());
-        factorMap.put(EDUCATION, town.getEducation());
-        factorMap.put(CULTURE, town.getCulture());
-        factorMap.put(MOVIE, town.getMovie());
-        factorMap.put(ART, town.getArt());
-        factorMap.put(PARK, town.getPark());
-        factorMap.put(LIBRARY, town.getLibrary());
-        factorMap.put(GREEN, town.getGreen());
-        factorMap.put(NOISE, town.getNoise());
-        factorMap.put(AIR, town.getAir());
-        factorMap.put(REST, town.getRest());
-        factorMap.put(WATER, town.getWater());
-        factorMap.put(SAFETY, town.getSafety());
-        factorMap.put(CLEAN, town.getClean());
-        factorMap.put(PARKING, town.getParking());
-        return factorMap;
-    }
-
     public PropertyResponse getProperties(String town) {
         Pageable firstTen = PageRequest.of(0, PAGE_SIZE);
         List<Property> properties = propertyRepository.findPropertiesByTownOrderByRandom(town, firstTen);
@@ -217,7 +226,6 @@ public class ReportService {
         if (GANGSEO_TOWN.contains(town)) {
             return agencyRepository.findByAddressLike("강서구");
         }
-
         PageRequest firstTen = PageRequest.of(0, PAGE_SIZE);
         return agencyRepository.findByTownOrderByRandom(town, firstTen);
     }
